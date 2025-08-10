@@ -5,7 +5,6 @@ const loadMongoose = async () => {
   port = process.env.MONGO_PORT || 27017;
   db = process.env.MONGO_DBNAME || "ChatApp";
   uri = `mongodb://${ip}:${port}/${db}`;
-
   mongoose.set("strictQuery", true);
   try {
     await mongoose.connect(uri, {
