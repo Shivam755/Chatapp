@@ -11,6 +11,19 @@ class UserRepository {
       console.error("Error fetching users: ", err);
     }
   };
+
+  registerUser = async (user) => {
+    try {
+      const newUser = new this.User(user);
+
+      const savedUser = await newUser.save();
+      console.log("user created:" + savedUser.name);
+    } catch (err) {
+      console.log(""+err);
+      return ""+err;
+    }
+    return "success";
+  };
 }
 
 module.exports = { UserRepository };

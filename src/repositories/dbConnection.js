@@ -30,4 +30,11 @@ const loadMongoose = async () => {
   return mongoose;
 };
 
-module.exports = { loadMongoose };
+const gracefulShutdown = async (signal="") => {
+  console.log(`\nReceived ${signal}. Closing MongoDB connection...`);
+  await mongoose.connection.close();
+  console.log('MongoDB connection closed.');
+  process.exit(0); // Exit process
+}
+
+module.exports = { loadMongoose, gracefulShutdown };
