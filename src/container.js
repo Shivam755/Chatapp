@@ -12,6 +12,8 @@ const {
   PermissionRepository,
 } = require("./repositories/permission.repository");
 const { PermissionController } = require("./controllers/permission.controller");
+const { RoleRepository } = require("./repositories/role.repository");
+const { RoleController } = require("./controllers/role.controller");
 
 class DIContainer {
   static #instance;
@@ -42,6 +44,7 @@ class DIContainer {
     container.register({
       userRepository: asClass(UserRepository).singleton(),
       permissionRepository: asClass(PermissionRepository).singleton(),
+      roleRepository: asClass(RoleRepository).singleton(),
     });
 
     // services
@@ -55,6 +58,7 @@ class DIContainer {
     container.register({
       userController: asClass(UserController).singleton(),
       permissionController: asClass(PermissionController).singleton(),
+      roleController: asClass(RoleController).singleton(),
     });
     this.#instance = container;
   };
