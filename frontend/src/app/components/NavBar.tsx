@@ -7,9 +7,7 @@ export default function Navbar() {
 
   const linkClass = (href: string) =>
     `px-4 py-2 rounded-full neumorphic font-semibold transition-transform ${
-      pathname === href
-        ? "scale-105 border-2 border-blue-500"
-        : "text-gray-900"
+      pathname === href ? "scale-105 border-2 border-blue-500" : "text-gray-900"
     }`;
 
   return (

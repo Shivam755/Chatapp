@@ -1,21 +1,22 @@
 const mongoose = require("mongoose");
 
 const loadMongoose = async () => {
-  ip = process.env.MONGO_IP || "localhost";
-  port = process.env.MONGO_PORT || 27017;
-  db = process.env.MONGO_DBNAME || "ChatApp";
-  uri = `mongodb://${ip}:${port}/${db}`;
+  connString = process.env.MONGO_CONN_STRING || "";
+  db = process.env.MONGO_DBNAME || "";
+  uri = `${connString}/${db}`;
   mongoose.set("strictQuery", true);
   try {
     await mongoose.connect(uri, {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
+      retryWrites: true,
+      writeConcern: { w: "majority" },
     });
     console.log("DB connection successfull");
   } catch (err) {
     console.error("❌ MongoDB connection error:", err.message);
     process.exit(1);
   }
+
   mongoose.connection.on("error", (err) => {
     console.error("❌ MongoDB runtime error:", err.message);
   });
@@ -30,11 +31,10 @@ const loadMongoose = async () => {
   return mongoose;
 };
 
-const gracefulShutdown = async (signal="") => {
-  console.log(`\nReceived ${signal}. Closing MongoDB connection...`);
-  await mongoose.connection.close();
-  console.log('MongoDB connection closed.');
-  process.exit(0); // Exit process
-}
+const disConnectDB = async () => {
+  console.log(`\nClosing MongoDB connection...`);
+  await mongoose.disconnect();
+  console.log("MongoDB connection closed.");
+};
 
-module.exports = { loadMongoose, gracefulShutdown };
+module.exports = { loadMongoose, disConnectDB };

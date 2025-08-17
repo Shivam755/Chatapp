@@ -12,6 +12,20 @@ class UserRepository {
     }
   };
 
+  getUserByEmail = async (email) => {
+    try {
+      const user = await this.User.find({ email }).lean();
+      if (!user || user.length === 0) {
+        console.log(`User with email "${email}" not found.`);
+        return null;
+      }
+      return user[0]; // Return the first user found
+    } catch (err) {
+      console.error("Error fetching user by email: ", err);
+      return null;
+    }
+  }
+
   registerUser = async (user) => {
     try {
       const newUser = new this.User(user);

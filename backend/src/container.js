@@ -1,19 +1,33 @@
 const { createContainer, asFunction, asClass, asValue } = require("awilix");
-const { loadMongoose } = require("./repositories/dbConnection");
-const { UserRepository } = require("./repositories/user.repository");
+
+
+// db and others
+const { loadMongoose } = require("./utilities/dbConnection");
+const { DbValueInsertOnCreation } = require("./utilities/defaultValues");
+// models
 const userModel = require("./models/user.model");
 const permissionModel = require("./models/permission.model");
 const roleModel = require("./models/role.model");
-const { UserService } = require("./services/user.service");
-const { PermissionService } = require("./services/permission.service");
-const { RoleService } = require("./services/role.service");
-const { UserController } = require("./controllers/user.controller");
+
+// repositories
+const { UserRepository } = require("./repositories/user.repository");
 const {
   PermissionRepository,
 } = require("./repositories/permission.repository");
-const { PermissionController } = require("./controllers/permission.controller");
 const { RoleRepository } = require("./repositories/role.repository");
+
+// services
+const { UserService } = require("./services/user.service");
+const { PermissionService } = require("./services/permission.service");
+const { RoleService } = require("./services/role.service");
+
+// controllers
+const { UserController } = require("./controllers/user.controller");
+const { PermissionController } = require("./controllers/permission.controller");
 const { RoleController } = require("./controllers/role.controller");
+
+
+
 
 class DIContainer {
   static #instance;
@@ -29,8 +43,10 @@ class DIContainer {
   static CreateContainer = async () => {
     const container = createContainer();
     const mongooseDB = await loadMongoose();
+    // db and otehrs
     container.register({
       mongoose: asValue(mongooseDB),
+      dbValueInsertOnCreation: asClass(DbValueInsertOnCreation).singleton(),
     });
 
     // models
