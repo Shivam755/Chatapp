@@ -7,7 +7,6 @@ const loadMongoose = async () => {
   mongoose.set("strictQuery", true);
   try {
     await mongoose.connect(uri, {
-      useNewUrlParser: true,
       retryWrites: true,
       writeConcern: { w: "majority" },
     });

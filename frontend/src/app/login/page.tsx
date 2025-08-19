@@ -37,15 +37,6 @@ export default function Login() {
 
   const validatePassword = (value: string) => {
     if (!value) return "Password is required";
-    if (value.length < 6) return "Password must be at least 6 characters";
-    if (!/[A-Z]/.test(value))
-      return "Password must include at least one uppercase letter";
-    if (!/[a-z]/.test(value))
-      return "Password must include at least one lowercase letter";
-    if (!/[0-9]/.test(value))
-      return "Password must include at least one number";
-    if (!/[@#$%&_]/.test(value))
-      return "Password must include at least one special character (@, #, $, %, &, _)";
     return "";
   };
 

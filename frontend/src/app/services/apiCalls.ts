@@ -1,3 +1,23 @@
+let debounceTimers: Record<string, NodeJS.Timeout> = {};
+
+const debounceFetch = (
+  key: string,
+  fetchFn: () => Promise<Response>,
+  delay: number = 500
+): Promise<Response> => {
+  return new Promise((resolve, reject) => {
+    if (debounceTimers[key]) clearTimeout(debounceTimers[key]);
+    debounceTimers[key] = setTimeout(async () => {
+      try {
+        const response = await fetchFn();
+        resolve(response);
+      } catch (err) {
+        reject(err);
+      }
+    }, delay);
+  });
+};
+
 export const getBaseUrl = () => {
   let baseurl = process.env.NEXT_PUBLIC_API_URL;
   if (!baseurl) {
@@ -15,13 +35,14 @@ export const registerUser = async (
   confirmPassword: string
 ) => {
   const result = { success: true, error: "", data: {} };
-  const response = await fetch(`${getBaseUrl()}/signup`, {
+  const fetchfn = () =>fetch(`${getBaseUrl()}/signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ name, email, password, confirmPassword }),
   });
+  const response = await debounceFetch("registerUser", fetchfn, 500);
 
   if (!response.ok) {
     console.log(response);
@@ -43,14 +64,14 @@ export const registerUser = async (
 
 export const loginUser = async (email: string, password: string) => {
   const result = { success: true, error: "", data: {} };
-  const response = await fetch(`${getBaseUrl()}/login`, {
+  const fetchfn = () => fetch(`${getBaseUrl()}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ email, password }),
   });
-
+  const response = await debounceFetch("registerUser", fetchfn, 500);
   if (!response.ok) {
     result.success = false;
     console.log(response)

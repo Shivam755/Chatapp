@@ -14,9 +14,14 @@ class UserRepository {
 
   getUserByEmail = async (email) => {
     try {
-      const user = await this.User.find({ email }).lean();
+      const user = await this.User.find({
+        $or: [
+          { email: email },
+          { name: email } // Allow searching by name as well
+        ]
+      }).lean();
       if (!user || user.length === 0) {
-        console.log(`User with email "${email}" not found.`);
+        console.log(`User with email or username "${email}" not found.`);
         return null;
       }
       return user[0]; // Return the first user found

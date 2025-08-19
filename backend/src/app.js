@@ -3,11 +3,15 @@ const cors = require("cors");
 const { GetContainer } = require("./container");
 const { GetPermissionRoutes } = require("./router/permission.route");
 const { GetRoleRoutes } = require("./router/role.route");
+const { disConnectDB } = require("./utilities/dbConnection");
+const { setupGracefulShutdown } = require("./utilities/gracefulShutDown");
+const { disconnectRedis } = require("./utilities/RedisConnection");
 
 const configureExpressApp = async () => {
   const app = express();
   const container = await GetContainer();
   const defaultValues = container.resolve("dbValueInsertOnCreation");
+  const redisClient = container.resolve("redisClient");
   // Insert default values into the database
   await defaultValues.insertDefaultValues();
 
@@ -33,6 +37,16 @@ const configureExpressApp = async () => {
   app.get("/users", userController.getAllUsers);
   app.post("/signup", userController.registerUser);
   app.post("/login", userController.loginUser);
+  // app.post("/decrypt", userController.decrypt);
+
+  setupGracefulShutdown([{
+    fn:disConnectDB,
+    args: []
+  },
+  {
+    fn: disconnectRedis,
+    args: [redisClient]}    
+], []);
 
   return app;
 };

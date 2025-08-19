@@ -1,6 +1,10 @@
+const jwt = require("jsonwebtoken");
+
 class UserController {
-  constructor({ userService }) {
+  constructor({ userService, encryption, redisClient }) {
     this.userService = userService;
+    this.encryption = encryption;
+    this.redisClient = redisClient;
   }
 
   getAllUsers = async (req, res) => {
@@ -27,14 +31,18 @@ class UserController {
 
     try {
       let response = await this.userService.registerUser(req.body);
-      if (response.startsWith("Validation")) {
-        console.log("Validation error");
-        return res.status(400).json({ error: response });
-      } else if (response.includes("E11000 duplicate key error collection")) {
-        console.log("Duplicate key error");
-        return res
-          .status(400)
-          .json({ error: "User with this email already exists" });
+      if (!response.success) {
+        if (response.error.startsWith("Validation")) {
+          console.log("Validation error");
+          return res.status(400).json({ error: response.error });
+        } else if (
+          response.error.includes("E11000 duplicate key error collection")
+        ) {
+          console.log("Duplicate key error");
+          return res
+            .status(400)
+            .json({ error: "User with this email already exists" });
+        }
       }
     } catch (err) {
       console.error("Error during user registration:", err);
@@ -55,16 +63,92 @@ class UserController {
         req.body.email,
         req.body.password
       );
-      console.log("Response from loginUser:", response);
-      if (response.startsWith("Validation")) {
-        return res.status(400).json({ error: response.replace("Validation error: ", "") });
+
+      // hndling errors
+      if (!response.success) {
+        if (response.error.startsWith("Validation")) {
+          return res
+            .status(400)
+            .json({ error: response.error.replace("Validation error: ", "") });
+        } else {
+          return res.status(401).json({ error: response.error });
+        }
       }
-      return res.json(response);
+
+      // If login is successful, generate JWT token
+      const { key, iv } = await this.encryption.generateKey();
+      const secret = this.encryption.generateJwtSecret();
+      const token = jwt.sign(
+        { email: response.data.email, role: response.data.role },
+        secret,
+        { expiresIn: "4h" }
+      );
+      const sessionId = this.encryption.generateSessionId();
+
+      // Encrypt the token and sessionId
+      const encryptedToken = await this.encryption.encrypt(key, iv, token);
+      const encryptedSessionid = await this.encryption.encrypt(
+        key,
+        iv,
+        sessionId
+      );
+
+      // creating object to store in redis
+      const { keyB64, ivB64 } = await this.encryption.convertKeyIvToBase64(
+        key,
+        iv
+      );
+      console.log(`Key: ${keyB64}, IV: ${ivB64},s`);
+      const redisObject = {
+        Key: keyB64,
+        IV: ivB64,
+        Secret: secret,
+      };
+
+      //encrypting redis object
+      const redisString = JSON.stringify(redisObject);
+      const redisValue = await this.encryption.encryptWithMasterKey(
+        redisString
+      );
+
+      // storing in redis
+      await this.redisClient.set(sessionId, redisValue, {
+        EX: 4 * 60 * 60 * 100,
+      }); // 4 hours
+
+      // setting cookies
+      const secureCookieOption = {
+        httpOnly: true,
+        sameSite: "Strict",
+        maxAge: 4 * 60 * 60 * 1000,
+      };
+      return res
+        .cookie(
+          "token",
+          encryptedToken,
+          secureCookieOption // 4 hours
+        )
+        .cookie("sessionId", encryptedSessionid, secureCookieOption)
+        .json({ success: true });
     } catch (err) {
       console.error("Error during user login:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
   };
+
+  // decrypt = async(req, res) => {
+  //   if (!req.body || !req.body.encryptedData) {
+  //     return res.status(400).json({ error: "Request Body not present or empty" });
+  //   }
+
+  //   try {
+  //     const decryptedData = await this.encryption.decryptWithMasterKey(req.body.encryptedData);
+  //     return res.json({ decryptedData });
+  //   } catch (err) {
+  //     console.error("Error during decryption:", err);
+  //     return res.status(500).json({ error: "Internal Server Error" });
+  //   }
+  // }
 }
 
 module.exports = { UserController };

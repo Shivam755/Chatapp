@@ -11,7 +11,7 @@ export default function Navbar() {
     }`;
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 neumorphic mb-8">
+    <nav className="flex items-center justify-between px-6 py-4 neumorphic mb-8 mx-4 mt-4">
       <div className="text-xl font-bold text-gray-800">Chat App</div>
       <div className="flex items-center gap-4">
         <Link href="/login" className={linkClass("/login")}>

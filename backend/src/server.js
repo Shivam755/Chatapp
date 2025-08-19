@@ -1,6 +1,4 @@
 const { configureExpressApp } = require("./app");
-const { disConnectDB } = require("./utilities/dbConnection");
-const { setupGracefulShutdown } = require("./utilities/gracefulShutDown");
 
 
 require("dotenv").config();
@@ -12,8 +10,6 @@ const main = async () => {
     console.log("Express server is running on port: " + port);
     return "Express is running";
   });
-
-  setupGracefulShutdown([disConnectDB], []);
 };
 
 main().catch((err) => {
