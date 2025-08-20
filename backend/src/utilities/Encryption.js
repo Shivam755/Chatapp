@@ -106,7 +106,9 @@ class Encryption {
       ["encrypt", "decrypt"]
     );
 
-    return { key, iv: ivBuffer };
+    const iv = new Uint8Array(ivBuffer);
+
+    return { key, iv };
   };
 
   /**

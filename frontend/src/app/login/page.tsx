@@ -1,11 +1,14 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, use } from "react";
 import { useRouter } from "next/navigation";
-import EyeIcon from "@/app/svg/eyeIcon";
-import { useToast } from "@/app/components/Toast";
-import { loginUser } from "@/app/services/apiCalls";
+import EyeIcon from "@/svg/eyeIcon";
+import { useToast } from "@/components/Toast";
+import { loginUser } from "@/services/apiCalls";
+import { useAuthStore } from "@/store/auth.store";
+import NeumorphicButton from "@/components/NeumorphicButton";
+import { withGuest } from "@/utils/withGuest";
 
-export default function Login() {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
@@ -16,6 +19,7 @@ export default function Login() {
 
   const { showToast } = useToast();
   const router = useRouter();
+  const setLogin = useAuthStore((state) => state.setLogin);
 
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -30,8 +34,7 @@ export default function Login() {
   };
   // Individual field validation
   const validateEmail = (value: string) => {
-    if (!value.trim()) return "Email is required";
-    if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value)) return "Invalid email";
+    if (!value.trim()) return "Email/Username is required";
     return "";
   };
 
@@ -64,18 +67,20 @@ export default function Login() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (validate()) {
       let response = await loginUser(email, password);
       if (!response.success) {
-        showToast(response.error, "error");
+        showToast(response.error??"", "error");
         return;
       }
+      // Save loginId and signed in state to global store
+      setLogin(response.loginid ?? "");
       showToast("Login successful!", "success");
       clearForm();
       // Redirect to home page after successful login
-      setTimeout(() => router.push("/"), 1200);
+      setTimeout(() => router.push("/listChat"), 1200);
     }
   };
 
@@ -98,7 +103,6 @@ export default function Login() {
         <h1 className="text-2xl font-bold mb-4 text-gray-800">Login</h1>
         <form
           className="flex flex-col gap-4 w-full"
-          onSubmit={handleSubmit}
           noValidate
         >
           <input
@@ -139,14 +143,33 @@ export default function Login() {
           {errors.password && (
             <span className="text-red-500 text-xs">{errors.password}</span>
           )}
-          <button
-            type="submit"
+          <div className="text-right mt-1">
+            <a
+              href="#"
+              className="text-blue-400 underline hover:text-blue-600 text-xs transition"
+            >
+              Forgot password?
+            </a>
+          </div>
+          <NeumorphicButton
+            onClick={handleSubmit}
             className="mt-4 px-4 py-2 rounded-full neumorphic text-blue-600 font-semibold shadow hover:scale-105 transition-transform"
           >
             Login
-          </button>
+          </NeumorphicButton>
+          <div className="mt-6 text-sm text-gray-600 text-center">
+            Don't have an account?{" "}
+            <a
+              href="/signup"
+              className="text-blue-500 underline hover:text-blue-700 transition"
+            >
+              Register
+            </a>
+          </div>
         </form>
       </div>
     </main>
   );
 }
+
+export default withGuest(Login);

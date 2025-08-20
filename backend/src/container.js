@@ -5,6 +5,9 @@ const { loadMongoose } = require("./utilities/dbConnection");
 const { DbValueInsertOnCreation } = require("./utilities/defaultValues");
 const { getRedisClient } = require("./utilities/RedisConnection");
 
+// middlewares
+const { authMiddleware } = require("./middlewares/auth.middleware");
+
 // models
 const userModel = require("./models/user.model");
 const permissionModel = require("./models/permission.model");
@@ -43,12 +46,17 @@ class DIContainer {
     this.#instance = createContainer();
     const mongooseDB = await loadMongoose();
     const redisClient = await getRedisClient();
-    // db and otehrs
+    // db and others
     this.#instance.register({
       mongoose: asValue(mongooseDB),
       dbValueInsertOnCreation: asClass(DbValueInsertOnCreation).singleton(),
       redisClient: asValue(redisClient),
       encryption: asClass(Encryption).singleton(),
+    });
+
+    // middlewares
+    this.#instance.register({
+      authMiddleware: asClass(authMiddleware).singleton(),
     });
 
     // models

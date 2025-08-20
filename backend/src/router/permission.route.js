@@ -4,8 +4,9 @@ const { GetContainer } = require("../container");
 const GetPermissionRoutes = async () => {
   const container = await GetContainer();
   const permissionController = container.resolve("permissionController");
-  router.get("/", permissionController.getAllPermission);
-  router.post("/", permissionController.addPermission);
+  const authMiddleware = container.resolve("authMiddleware");
+  router.get("/", authMiddleware.verifyToken, authMiddleware.requireRole("admin"), permissionController.getAllPermission);
+  router.post("/", authMiddleware.verifyToken, authMiddleware.requireRole("admin"), permissionController.addPermission);
   return router;
 };
 

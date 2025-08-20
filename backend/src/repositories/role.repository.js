@@ -26,6 +26,34 @@ class RoleRepository {
     }
   }
 
+  getRoleById = async (id) => {
+    try {
+      const role = await this.Role.findById(id).lean();
+      if (!role) {
+        console.log(`Role with ID "${id}" not found.`);
+        return null;
+      }
+      return role;
+    } catch (err) {
+      console.error("Error fetching Role by ID: ", err);
+      return null;
+    }
+  };
+
+  getRoleNameById = async (id) => {
+    try {
+      const role = await this.Role.findById(id).lean();
+      if (!role) {
+        console.log(`Role with ID "${id}" not found.`);
+        return null;
+      }
+      return role.name;
+    } catch (err) {
+      console.error("Error fetching Role name by ID: ", err);
+      return null;
+    }
+  };
+
   addRole = async (role) => {
     try {
       const newRole = new this.Role(role);

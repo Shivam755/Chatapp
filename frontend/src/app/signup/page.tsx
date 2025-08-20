@@ -1,11 +1,13 @@
 "use client";
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import EyeIcon from "@/app/svg/eyeIcon";
-import { registerUser } from "@/app/services/apiCalls";
-import { useToast } from "@/app/components/Toast";
+import EyeIcon from "@/svg/eyeIcon";
+import { registerUser } from "@/services/apiCalls";
+import { useToast } from "@/components/Toast";
+import NeumorphicButton from "@/components/NeumorphicButton";
+import { withGuest } from "@/utils/withGuest";
 
-export default function Signup() {
+function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -177,7 +179,6 @@ export default function Signup() {
         <h1 className="text-2xl font-bold mb-4 text-gray-800">Sign Up</h1>
         <form
           className="flex flex-col gap-4 w-full"
-          onSubmit={handleSubmit}
           noValidate
         >
           <input
@@ -261,14 +262,25 @@ export default function Signup() {
               {errors.confirmPassword}
             </span>
           )}
-          <button
-            type="submit"
+          <NeumorphicButton
+            onClick={handleSubmit}
             className="mt-4 px-4 py-2 rounded-full neumorphic text-purple-600 font-semibold shadow hover:scale-105 transition-transform"
           >
             Sign Up
-          </button>
+          </NeumorphicButton>
+          <div className="mt-6 text-sm text-gray-600 text-center">
+            Already have an account?{" "}
+            <a
+              href="/login"
+              className="text-purple-500 underline hover:text-purple-700 transition"
+            >
+              Login
+            </a>
+          </div>
         </form>
       </div>
     </main>
   );
 }
+
+export default withGuest(Signup);

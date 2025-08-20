@@ -11,7 +11,7 @@ body {
 /* Neumorphism utility classes */
 .neumorphic {
   background: #e0e5ec;
-  border-radius: 20px;
+  border-radius: 12px;
   box-shadow: 8px 8px 20px #babecc, -8px -8px 20px #fff;
 }
 
@@ -23,4 +23,10 @@ body {
   padding: 0.75rem 1rem;
   color: #23272f;
   font-size: 1rem;
+}
+
+.neumorphic-pressed {
+  background: #e0e5ec;
+  border-radius: 12px;
+  box-shadow: inset 4px 4px 8px #babecc, inset -4px -4px 8px #fff;
 }

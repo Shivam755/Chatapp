@@ -1,10 +1,15 @@
 const jwt = require("jsonwebtoken");
+const { Token, sessionId } = require("../utilities/constants");
 
 class UserController {
   constructor({ userService, encryption, redisClient }) {
     this.userService = userService;
     this.encryption = encryption;
     this.redisClient = redisClient;
+  }
+
+  sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   getAllUsers = async (req, res) => {
@@ -83,26 +88,24 @@ class UserController {
         secret,
         { expiresIn: "4h" }
       );
-      const sessionId = this.encryption.generateSessionId();
+      const genSessionId = this.encryption.generateSessionId();
 
-      // Encrypt the token and sessionId
+      // Encrypt the token and genSessionId
       const encryptedToken = await this.encryption.encrypt(key, iv, token);
-      const encryptedSessionid = await this.encryption.encrypt(
-        key,
-        iv,
-        sessionId
+      const encryptedSessionid = await this.encryption.encryptWithMasterKey(
+        genSessionId
       );
+      const encryptedLoginId = await this.encryption.encrypt(key, iv, response.data._id);
 
       // creating object to store in redis
       const { keyB64, ivB64 } = await this.encryption.convertKeyIvToBase64(
         key,
         iv
       );
-      console.log(`Key: ${keyB64}, IV: ${ivB64},s`);
       const redisObject = {
-        Key: keyB64,
-        IV: ivB64,
-        Secret: secret,
+        key: keyB64,
+        iv: ivB64,
+        secret: secret,
       };
 
       //encrypting redis object
@@ -112,24 +115,26 @@ class UserController {
       );
 
       // storing in redis
-      await this.redisClient.set(sessionId, redisValue, {
-        EX: 4 * 60 * 60 * 100,
+      await this.redisClient.set(genSessionId, redisValue, {
+        EX: 4 * 60 * 60 ,
       }); // 4 hours
 
       // setting cookies
       const secureCookieOption = {
         httpOnly: true,
-        sameSite: "Strict",
+        sameSite: "strict",
         maxAge: 4 * 60 * 60 * 1000,
+        path: "/",
       };
+      // await this.sleep(5000); // Simulating some delay
       return res
         .cookie(
-          "token",
+          Token,
           encryptedToken,
           secureCookieOption // 4 hours
         )
-        .cookie("sessionId", encryptedSessionid, secureCookieOption)
-        .json({ success: true });
+        .cookie(sessionId, encryptedSessionid, secureCookieOption)
+        .json({ success: true, loginid: encryptedLoginId });
     } catch (err) {
       console.error("Error during user login:", err);
       return res.status(500).json({ error: "Internal Server Error" });

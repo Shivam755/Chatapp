@@ -3,11 +3,11 @@ class RoleService {
     this.roleRepository = roleRepository;
   }
 
-  getAllrole = async () => {
+  getAllRole = async () => {
     return await this.roleRepository.getAllRole();
   };
 
-  addrole = async (roleName) => {
+  addRole = async (roleName) => {
     return await this.roleRepository.addRole({
       name: roleName,
     });

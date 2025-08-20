@@ -13,6 +13,7 @@ export type ToastProps = {
   type?: "success" | "error" | "info";
   onClose?: () => void;
   duration?: number;
+  position?: ToastPosition;
 };
 
 type ToastPosition =
@@ -62,6 +63,27 @@ function getPositionClasses(position: ToastPosition) {
       return "bottom-8 left-1/2 transform -translate-x-1/2 items-center";
     default:
       return "top-8 left-1/2 transform -translate-x-1/2 items-center";
+  }
+}
+
+// Animation classes based on position
+function getToastAnimation(position: ToastPosition, show: boolean) {
+  const base = "transition-all duration-300";
+  switch (position) {
+    case "top-right":
+      return `${base} ${show ? "translate-x-0 opacity-100" : "translate-x-32 opacity-0"}`;
+    case "top-left":
+      return `${base} ${show ? "translate-x-0 opacity-100" : "-translate-x-32 opacity-0"}`;
+    case "top-middle":
+      return `${base} ${show ? "translate-y-0 opacity-100" : "-translate-y-8 opacity-0"}`;
+    case "bottom-right":
+      return `${base} ${show ? "translate-x-0 opacity-100" : "translate-x-32 opacity-0"}`;
+    case "bottom-left":
+      return `${base} ${show ? "translate-x-0 opacity-100" : "-translate-x-32 opacity-0"}`;
+    case "bottom-middle":
+      return `${base} ${show ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`;
+    default:
+      return `${base} ${show ? "translate-y-0 opacity-100" : "-translate-y-8 opacity-0"}`;
   }
 }
 
@@ -120,6 +142,7 @@ export function ToastProvider({
               <Toast
                 key={toast.id}
                 {...toast}
+                position={pos as ToastPosition}
                 onClose={() => removeToast(toast.id)}
               />
             ))}
@@ -135,24 +158,34 @@ export default function Toast({
   type = "info",
   onClose,
   duration = 3000,
+  position = "bottom-right",
 }: ToastProps) {
+  const [show, setShow] = useState(false);
+
   useEffect(() => {
+    setShow(true);
     if (onClose) {
-      const timer = setTimeout(onClose, duration);
+      const timer = setTimeout(() => {
+        setShow(false);
+        setTimeout(onClose, 300); // Wait for animation before removing
+      }, duration);
       return () => clearTimeout(timer);
     }
   }, [onClose, duration]);
 
   return (
     <div
-      className={`neumorphic px-6 py-3 rounded-2xl border ${toastColors[type]} shadow-lg flex items-center gap-2 mb-3`}
+      className={`neumorphic px-6 py-3 rounded-2xl border ${toastColors[type]} shadow-lg flex items-center gap-2 mb-3 ${getToastAnimation(position, show)}`}
       style={{ minWidth: "220px", maxWidth: "90vw" }}
     >
       <span className="flex-1 text-center font-medium">{message}</span>
       {onClose && (
         <span
-          className="ml-2 px-2 py-1 rounded-full neumorphic-input border border-gray-300 text-gray-600 hover:bg-gray-200 transition cursor-pointer"
-          onMouseDown={onClose}
+          className="ml-2 px-2 py-1 rounded-full neumorphic border border-gray-300 text-gray-600 hover:bg-gray-200 transition cursor-pointer"
+          onMouseDown={() => {
+            setShow(false);
+            setTimeout(onClose, 300);
+          }}
           aria-label="Close"
         >
           ×
