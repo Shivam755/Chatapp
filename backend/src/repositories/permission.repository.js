@@ -127,4 +127,4 @@ class PermissionRepository {
   };
 }
 
-module.exports = { PermissionRepository };
+module.exports = PermissionRepository;

@@ -24,4 +24,4 @@ class PermissionController {
   };
 }
 
-module.exports = { PermissionController };
+module.exports = PermissionController;

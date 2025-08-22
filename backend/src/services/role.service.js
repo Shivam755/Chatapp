@@ -14,4 +14,4 @@ class RoleService {
   };
 }
 
-module.exports = { RoleService };
+module.exports = RoleService;

@@ -24,4 +24,4 @@ class RoleController {
   };
 }
 
-module.exports = { RoleController };
+module.exports = RoleController;

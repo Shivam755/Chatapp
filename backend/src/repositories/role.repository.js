@@ -86,4 +86,4 @@ class RoleRepository {
   };
 }
 
-module.exports = { RoleRepository };
+module.exports = RoleRepository;

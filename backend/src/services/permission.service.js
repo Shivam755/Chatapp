@@ -12,4 +12,4 @@ class PermissionService {
   };
 }
 
-module.exports = { PermissionService };
+module.exports = PermissionService;
