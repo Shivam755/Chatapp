@@ -12,19 +12,19 @@ class UserRepository {
     }
   };
 
-  getUserByEmail = async (email) => {
+  getUserByEmailorUsername = async (email) => {
     try {
-      const user = await this.User.find({
+      const user = await this.User.findOne({
         $or: [
           { email: email },
           { name: email } // Allow searching by name as well
         ]
-      }).lean();
-      if (!user || user.length === 0) {
+      }).populate("role","name").lean();
+      if (!user) {
         console.log(`User with email or username "${email}" not found.`);
         return null;
       }
-      return user[0]; // Return the first user found
+      return user;
     } catch (err) {
       console.error("Error fetching user by email: ", err);
       return null;
@@ -34,7 +34,6 @@ class UserRepository {
   registerUser = async (user) => {
     try {
       const newUser = new this.User(user);
-
       const savedUser = await newUser.save();
       console.log("user created:" + savedUser.name);
     } catch (err) {

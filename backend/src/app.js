@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const { GetContainer } = require("./container");
 const { GetPermissionRoutes } = require("./router/permission.route");
 const { GetRoleRoutes } = require("./router/role.route");
+const { GetFollowRoutes } = require("./router/follow.route");
 const { disConnectDB } = require("./utilities/dbConnection");
 const { setupGracefulShutdown } = require("./utilities/gracefulShutDown");
 const { disconnectRedis } = require("./utilities/RedisConnection");
@@ -19,6 +20,7 @@ const configureExpressApp = async () => {
   const userController = container.resolve("userController");
   const permissionRouter = await GetPermissionRoutes();
   const roleRouter = await GetRoleRoutes();
+  const followRouter = await GetFollowRoutes();
   const authMiddleware = container.resolve("authMiddleware");
   // adding middlewares
   app.use(express.json());
@@ -32,10 +34,10 @@ const configureExpressApp = async () => {
     })
   );
 
-  // registering permission routes
+  // registering routes
   app.use("/permission", permissionRouter);
-  // registering role routes
   app.use("/role", roleRouter);
+  app.use("/follow", followRouter);
 
   app.get("/users", authMiddleware.verifyToken, authMiddleware.requireRole("admin"), userController.getAllUsers);
   app.post("/signup", userController.registerUser);

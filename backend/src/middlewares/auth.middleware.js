@@ -30,7 +30,7 @@ class authMiddleware {
       if (!encryptedData) {
         return res.status(401).json({ error: "Unauthorized access" });
       }
-      console.log("Encrypted Data:", encryptedData);
+      console.log("Decrypting data from redis");
       const decryptedData = await this.encryption.decryptWithMasterKey(
         encryptedData
       );
@@ -64,9 +64,8 @@ class authMiddleware {
       if (!req.user || !req.user.role) {
         return res.status(403).json({ error: "Forbidden: Insufficient role" });
       }
-      console.log("Fetching user role from repository...");
-      const userRole = await this.roleRepository.getRoleById(req.user.role);
-      if (!userRole || !role.includes(userRole.name)) {
+      let userRole = req.user.role;
+      if (!role.includes(userRole.name)) {
         console.log("Insufficient role:", userRole ? userRole.name : "undefined");
         return res.status(403).json({ error: "Forbidden: Insufficient role" });
       }

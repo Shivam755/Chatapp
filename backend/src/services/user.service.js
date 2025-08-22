@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const {CustomResponse} = require("../models/response");
 
 class UserService {
   constructor({ userRepository, roleRepository }) {
@@ -16,7 +17,7 @@ class UserService {
       response.error = "Validation error: Email and password are required";
       return response;
     }
-    const user = await this.userRepository.getUserByEmail(email);
+    const user = await this.userRepository.getUserByEmailorUsername(email);
     if (!user) {
       response.error = "Validation error: User not found";
       return response;
@@ -32,7 +33,7 @@ class UserService {
   };
 
   registerUser = async (user) => {
-    let response = { success: false, error: "", data: {}}
+    let response = new CustomResponse();
     let userRow = {};
     userRow.name = user.name;
     userRow.email = user.email;

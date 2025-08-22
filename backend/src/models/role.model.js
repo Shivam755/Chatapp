@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 getRoleModel = () => {
   const roleSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
-    permissions: [{ type: mongoose.Types.ObjectId }], // store permission names
+    permissions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Permission" }], // store permission names
   });
   return mongoose.model("Role", roleSchema);
 };
