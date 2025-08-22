@@ -19,7 +19,7 @@ const baseDirs = {
   controller: path.join(__dirname, "..", "src", "controllers"),
   service: path.join(__dirname, "..", "src", "services"),
   repository: path.join(__dirname, "..", "src", "repositories"),
-  router: path.join(__dirname, "..", "src", "router"),
+  route: path.join(__dirname, "..", "src", "router"),
 };
 
 // Ensure directories exist
@@ -31,8 +31,8 @@ Object.values(baseDirs).forEach((dir) => {
 const files = {
   controller: `
 class ${pascalName}Controller {
-  constructor({${pascalName}Service}) {
-    this.${camelName}Service = ${pascalName}Service;
+  constructor({${camelName}Service}) {
+    this.${camelName}Service = ${camelName}Service;
   }
 
   async getAll(req, res) {
@@ -46,12 +46,12 @@ module.exports = ${pascalName}Controller;
 
   service: `
 class ${pascalName}Service {
-  constructor({${pascalName}Repository}) {
-    this.${camelName}Repository = ${pascalName}Repository;
+  constructor({${camelName}Repository}) {
+    this.${camelName}Repository = ${camelName}Repository;
   }
 
   async getAll() {
-    return this.this.${camelName}Repository.findAll();
+    return this.${camelName}Repository.findAll();
   }
 }
 
@@ -86,7 +86,7 @@ const Get${pascalName}Routes = async () => {
   return router;
 }
 
-module.exports = Get${pascalName}Routes;
+module.exports = { Get${pascalName}Routes };
 `,
 };
 
