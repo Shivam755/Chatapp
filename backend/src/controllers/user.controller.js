@@ -95,7 +95,11 @@ class UserController {
       const encryptedSessionid = await this.encryption.encryptWithMasterKey(
         genSessionId
       );
-      const encryptedLoginId = await this.encryption.encrypt(key, iv, response.data._id);
+      const encryptedLoginId = await this.encryption.encrypt(
+        key,
+        iv,
+        response.data._id
+      );
 
       // creating object to store in redis
       const { keyB64, ivB64 } = await this.encryption.convertKeyIvToBase64(
@@ -116,7 +120,7 @@ class UserController {
 
       // storing in redis
       await this.redisClient.set(genSessionId, redisValue, {
-        EX: 4 * 60 * 60 ,
+        EX: 4 * 60 * 60,
       }); // 4 hours
 
       // setting cookies
@@ -138,6 +142,32 @@ class UserController {
     } catch (err) {
       console.error("Error during user login:", err);
       return res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+
+  logout = async (req, res) => {
+    let sessionId = req.sessionId;
+    try {
+      console.log("deleting redis entry");
+      // deleting the redis entry
+      const delRes = await this.redisClient.del(sessionId);
+      if (delRes != 1) {
+        return res
+          .status(500)
+          .json({
+            error: "There was some issue in logout. Please try again later!",
+          });
+      }
+      console.log("Redis entry deleted successfully!");
+      // clearing cookies
+      res.clearCookie(Token);
+      console.log("Token cleared");
+      res.clearCookie(sessionId);
+      console.log("sessionId cleared");
+      return res.status(200).json({ "response": "Logout successful!"});
+    } catch (err) {
+      console.log("Error during user registration: " + err);
+      req.status(500).json({ error: err });
     }
   };
 

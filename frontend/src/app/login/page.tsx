@@ -3,7 +3,7 @@ import React, { useState, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import EyeIcon from "@/svg/eyeIcon";
 import { useToast } from "@/components/Toast";
-import { loginUser } from "@/services/apiCalls";
+import { loginUser } from "@/services/user.api";
 import { useAuthStore } from "@/store/auth.store";
 import NeumorphicButton from "@/components/NeumorphicButton";
 import { withGuest } from "@/utils/withGuest";
@@ -80,7 +80,7 @@ function Login() {
       showToast("Login successful!", "success");
       clearForm();
       // Redirect to home page after successful login
-      setTimeout(() => router.push("/listChat"), 1200);
+      // setTimeout(() => router.push("/listChat"), 1200);
     }
   };
 

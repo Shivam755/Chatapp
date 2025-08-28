@@ -13,7 +13,7 @@ export function withGuest(Component: React.ComponentType) {
       if (loginId || isSignedIn) {
         router.replace("/listChat");
       }
-    }, []);
+    }, [isSignedIn]);
 
     return <Component {...props} />;
   };

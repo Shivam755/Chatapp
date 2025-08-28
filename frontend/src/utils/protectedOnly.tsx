@@ -13,7 +13,7 @@ export function protectedOnly(Component: React.ComponentType) {
       if (!(loginId || isSignedIn)) {
         router.replace("/login");
       }
-    }, []);
+    }, [isSignedIn]);
 
     return <Component {...props} />;
   };

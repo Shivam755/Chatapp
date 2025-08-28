@@ -1,5 +1,4 @@
-const { createContainer, asFunction, asClass, asValue, listModules } = require("awilix");
-const path = require("path");
+const { createContainer, asFunction, asClass, asValue } = require("awilix");
 
 // db and others
 const { loadMongoose } = require("./utilities/dbConnection");

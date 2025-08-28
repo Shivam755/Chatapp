@@ -42,6 +42,7 @@ const configureExpressApp = async () => {
   app.get("/users", authMiddleware.verifyToken, authMiddleware.requireRole("admin"), userController.getAllUsers);
   app.post("/signup", userController.registerUser);
   app.post("/login", userController.loginUser);
+  app.delete("/logout", authMiddleware.verifyToken, authMiddleware.requireRole("user"), userController.logout)
   // app.post("/decrypt", userController.decrypt);
 
   setupGracefulShutdown([{

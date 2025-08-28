@@ -2,7 +2,7 @@
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import EyeIcon from "@/svg/eyeIcon";
-import { registerUser } from "@/services/apiCalls";
+import { registerUser } from "@/services/user.api";
 import { useToast } from "@/components/Toast";
 import NeumorphicButton from "@/components/NeumorphicButton";
 import { withGuest } from "@/utils/withGuest";

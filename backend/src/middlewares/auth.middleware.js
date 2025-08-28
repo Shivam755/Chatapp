@@ -50,6 +50,7 @@ class authMiddleware {
       console.log("verifying JWT token");
       const decoded = jwt.verify(decryptedToken, JsonObject.secret);
       req.user = decoded;
+      req.sessionId = decryptedSessId;
     } catch (err) {
       console.error("JWT verification failed:", err);
       return res.status(401).json({ error: "Unauthorized access" });
