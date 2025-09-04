@@ -51,6 +51,22 @@ class UserService {
     }
     return response;
   }
+
+  getUserInfo = async(email) => {
+    let response = new CustomResponse();
+    if (email === null || email === "" || email === undefined){
+      response.error = "Empty email is not valid!";
+      return response;
+    }
+    response.data = await this.userRepository.getUserInfo(email);
+    if (response.data === null) {
+      response.error = `No user found with email: ${email}`;
+      return response;
+    }
+    response.success = true;
+
+    return response;
+  }
 }
 
 module.exports = UserService;

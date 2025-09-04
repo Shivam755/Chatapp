@@ -1,12 +1,11 @@
 "use client";
-import React, { useState, useRef, use } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useRef } from "react";
 import EyeIcon from "@/svg/eyeIcon";
 import { useToast } from "@/components/Toast";
 import { loginUser } from "@/services/user.api";
 import { useAuthStore } from "@/store/auth.store";
 import NeumorphicButton from "@/components/NeumorphicButton";
-import { withGuest } from "@/utils/withGuest";
+import { withGuest } from "@/wrappers/withGuest";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -18,13 +17,11 @@ function Login() {
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
   const { showToast } = useToast();
-  const router = useRouter();
   const setLogin = useAuthStore((state) => state.setLogin);
 
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const inputClass = "neumorphic-input focus:outline-none w-full";
-
 
   const clearForm = () => {
     setEmail("");
@@ -71,16 +68,17 @@ function Login() {
     e.preventDefault();
     if (validate()) {
       let response = await loginUser(email, password);
+      console.log(response);
       if (!response.success) {
-        showToast(response.error??"", "error");
-        return;
+        showToast(response.error ?? "", "error");
+      } else {
+        // Save loginId and signed in state to global store
+        setLogin(response.data?.loginid ?? "");
+        showToast("Login successful!", "success");
+        clearForm();
+        // Redirect to home page after successful login
+        // setTimeout(() => router.push("/listChat"), 1200);
       }
-      // Save loginId and signed in state to global store
-      setLogin(response.loginid ?? "");
-      showToast("Login successful!", "success");
-      clearForm();
-      // Redirect to home page after successful login
-      // setTimeout(() => router.push("/listChat"), 1200);
     }
   };
 
@@ -101,13 +99,10 @@ function Login() {
     <main className="flex flex-col items-center justify-center min-h-screen bg-[#e0e5ec]">
       <div className="neumorphic p-8 w-80 flex flex-col items-center">
         <h1 className="text-2xl font-bold mb-4 text-gray-800">Login</h1>
-        <form
-          className="flex flex-col gap-4 w-full"
-          noValidate
-        >
+        <div className="flex flex-col gap-4 w-full">
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email/Username"
             className={inputClass}
             value={email}
             onChange={handleEmailChange}
@@ -166,7 +161,7 @@ function Login() {
               Register
             </a>
           </div>
-        </form>
+        </div>
       </div>
     </main>
   );

@@ -5,7 +5,7 @@ import EyeIcon from "@/svg/eyeIcon";
 import { registerUser } from "@/services/user.api";
 import { useToast } from "@/components/Toast";
 import NeumorphicButton from "@/components/NeumorphicButton";
-import { withGuest } from "@/utils/withGuest";
+import { withGuest } from "@/wrappers/withGuest";
 
 function Signup() {
   const [email, setEmail] = useState("");
@@ -126,7 +126,6 @@ function Signup() {
         confirmPassword
       );
       try {
-        console.log(response);
         if (response.success) {
           console.log("User registered successfully:", response);
           // Redirect or show success message
@@ -136,8 +135,8 @@ function Signup() {
             router.push("/login"); // Redirect to login page after successful registration
           });
         } else {
-          showToast(response.error, "error");
-          if (response.error.includes("email already exists")) {
+          showToast(response.error ?? "", "error");
+          if ((response.error ?? "").includes("email already exists")) {
             setErrors((prev) => ({ ...prev, email: "Email already exists" }));
           }
         }
@@ -177,10 +176,7 @@ function Signup() {
     <main className="flex flex-col items-center justify-center min-h-screen bg-[#e0e5ec]">
       <div className="neumorphic p-8 w-80 flex flex-col items-center">
         <h1 className="text-2xl font-bold mb-4 text-gray-800">Sign Up</h1>
-        <form
-          className="flex flex-col gap-4 w-full"
-          noValidate
-        >
+        <form className="flex flex-col gap-4 w-full" noValidate>
           <input
             type="text"
             placeholder="Name"

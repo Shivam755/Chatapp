@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { Token, sessionId } = require("../utilities/constants");
+const { isEmptyString } = require("../utilities/commonFunctions");
 
 class UserController {
   constructor({ userService, encryption, redisClient }) {
@@ -57,7 +58,11 @@ class UserController {
   };
 
   loginUser = async (req, res) => {
-    if (!req.body || !req.body.email || !req.body.password) {
+    if (
+      !req.body ||
+      isEmptyString(req.body.email) ||
+      isEmptyString(req.body.password)
+    ) {
       return res
         .status(400)
         .json({ error: "Request Body not present or empty" });
@@ -152,11 +157,9 @@ class UserController {
       // deleting the redis entry
       const delRes = await this.redisClient.del(sessionId);
       if (delRes != 1) {
-        return res
-          .status(500)
-          .json({
-            error: "There was some issue in logout. Please try again later!",
-          });
+        return res.status(500).json({
+          error: "There was some issue in logout. Please try again later!",
+        });
       }
       console.log("Redis entry deleted successfully!");
       // clearing cookies
@@ -164,11 +167,37 @@ class UserController {
       console.log("Token cleared");
       res.clearCookie(sessionId);
       console.log("sessionId cleared");
-      return res.status(200).json({ "response": "Logout successful!"});
+      return res.status(200).json({ response: "Logout successful!" });
     } catch (err) {
       console.log("Error during user registration: " + err);
       req.status(500).json({ error: err });
     }
+  };
+
+  getUserInfo = async (req, res) => {
+    let email = req.user.email;
+    console.log(req.user);
+    console.log(email);
+    let response = await this.userService.getUserInfo(email);
+    console.log(response);
+    if (!response.success) {
+      console.log(response)
+      return res.status(403).json({ error: response.error });
+    }
+    return res.status(200).json(response.data);
+  };
+
+  isLoggedIn = async (req, res) => {
+    if (req.user === undefined || isEmptyString(req.user.email)) {
+      return res.status(401);
+    }
+    const response = await this.userService.getUserInfo(req.user.email);
+
+    if (!response.success){
+      return res.status(401);
+    }
+
+    return res.status(200).json({ success: true });
   };
 
   // decrypt = async(req, res) => {

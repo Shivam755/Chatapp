@@ -1,6 +1,8 @@
+'use client';
 import Link from "next/link";
+import { withGuest } from "@/wrappers/withGuest";
 
-export default function Home() {
+function Home() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-[#e0e5ec] ">
       <div className="neumorphic p-10 flex flex-col items-center max-w-lg w-full">
@@ -42,3 +44,5 @@ export default function Home() {
     </main>
   );
 }
+
+export default withGuest(Home);

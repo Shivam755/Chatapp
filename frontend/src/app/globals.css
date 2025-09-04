@@ -30,3 +30,7 @@ body {
   border-radius: 12px;
   box-shadow: inset 4px 4px 8px #babecc, inset -4px -4px 8px #fff;
 }
+
+.st1 {
+  fill :#333 ;
+}

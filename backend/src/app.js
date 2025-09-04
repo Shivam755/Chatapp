@@ -8,6 +8,7 @@ const { GetFollowRoutes } = require("./router/follow.route");
 const { disConnectDB } = require("./utilities/dbConnection");
 const { setupGracefulShutdown } = require("./utilities/gracefulShutDown");
 const { disconnectRedis } = require("./utilities/RedisConnection");
+const { GetUserRoutes } = require("./router/user.route");
 
 const configureExpressApp = async () => {
   const app = express();
@@ -21,6 +22,7 @@ const configureExpressApp = async () => {
   const permissionRouter = await GetPermissionRoutes();
   const roleRouter = await GetRoleRoutes();
   const followRouter = await GetFollowRoutes();
+  const userRouter = await GetUserRoutes();
   const authMiddleware = container.resolve("authMiddleware");
   // adding middlewares
   app.use(express.json());
@@ -38,11 +40,8 @@ const configureExpressApp = async () => {
   app.use("/permission", permissionRouter);
   app.use("/role", roleRouter);
   app.use("/follow", followRouter);
+  app.use("/user", userRouter);
 
-  app.get("/users", authMiddleware.verifyToken, authMiddleware.requireRole("admin"), userController.getAllUsers);
-  app.post("/signup", userController.registerUser);
-  app.post("/login", userController.loginUser);
-  app.delete("/logout", authMiddleware.verifyToken, authMiddleware.requireRole("user"), userController.logout)
   // app.post("/decrypt", userController.decrypt);
 
   setupGracefulShutdown([{

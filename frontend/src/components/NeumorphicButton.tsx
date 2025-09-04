@@ -1,5 +1,4 @@
 "use client";
-import { on } from "events";
 import React, { useState } from "react";
 
 type NeumorphicButtonProps = {
@@ -19,6 +18,7 @@ export default function NeumorphicButton({
   const [pressed, setPressed] = useState(false);
 
   const handleClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
     if (onClick === undefined || disabled) {
       return;
     }
