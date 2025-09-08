@@ -5,7 +5,7 @@ import { withGuest } from "@/wrappers/withGuest";
 function Home() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-[#e0e5ec] ">
-      <div className="neumorphic p-10 flex flex-col items-center max-w-lg w-full">
+      <div className="neumorphic rounded-[12px] p-10 flex flex-col items-center max-w-lg w-full">
         <h1 className="text-5xl font-extrabold mb-4 text-center text-gray-800 ">
           Welcome to ChatVerse
         </h1>

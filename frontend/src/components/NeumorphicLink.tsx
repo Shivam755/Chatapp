@@ -28,8 +28,8 @@ export default function NeumorphicLink({
       className={`px-4 py-2 rounded-full font-semibold transition-transform duration-150
         ${
           pressed
-            ? "neumorphic-pressed scale-95"
-            : "neumorphic hover:scale-105"
+            ? "neumorphic-pressed rounded-[12px] scale-95"
+            : "neumorphic rounded-[12px] hover:scale-105"
         }
         ${className}
       `}

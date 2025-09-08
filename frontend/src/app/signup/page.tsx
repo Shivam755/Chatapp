@@ -29,7 +29,7 @@ function Signup() {
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmRef = useRef<HTMLInputElement>(null);
 
-  const inputClass = "neumorphic-input focus:outline-none w-full";
+  const inputClass = "neumorphic-input rounded-[12px] focus:outline-none w-full";
 
   const clearForm = () => {
     setEmail("");
@@ -174,7 +174,7 @@ function Signup() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-[#e0e5ec]">
-      <div className="neumorphic p-8 w-80 flex flex-col items-center">
+      <div className="neumorphic rounded-[12px] p-8 w-80 flex flex-col items-center">
         <h1 className="text-2xl font-bold mb-4 text-gray-800">Sign Up</h1>
         <form className="flex flex-col gap-4 w-full" noValidate>
           <input

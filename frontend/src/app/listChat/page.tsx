@@ -1,15 +1,15 @@
 "use client";
 import React from "react";
-import NeumorphicButton from "@/components/NeumorphicButton";
 import { protectedOnly } from "@/wrappers/protectedOnly";
 
 const ListChat = () => {
 
   return (
-    <div className="w-[98dvw] h-[80dvh] neumorphic-pressed m-4 p-4">
-      <h1>List chat page</h1>
-      <NeumorphicButton>Success</NeumorphicButton>
-      <NeumorphicButton>Failure</NeumorphicButton>
+    <div className="flex flex-row justify-between w-full h-full p-1">
+      <div className="neumorphic rounded-[12px] w-[25dvw] h-full flex items-center justify-center text-center">
+        You don't have any friends yet
+      </div>
+      <div className="neumorphic-pressed rounded-[12px] h-full w-[70dvw]"></div>
     </div>
   );
 };

@@ -21,7 +21,7 @@ function Login() {
 
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const inputClass = "neumorphic-input focus:outline-none w-full";
+  const inputClass = "neumorphic-input rounded-[12px] focus:outline-none w-full";
 
   const clearForm = () => {
     setEmail("");
@@ -73,6 +73,7 @@ function Login() {
         showToast(response.error ?? "", "error");
       } else {
         // Save loginId and signed in state to global store
+        console.log("LogginId: "+(response.data?.loginid ?? ""));
         setLogin(response.data?.loginid ?? "");
         showToast("Login successful!", "success");
         clearForm();
@@ -96,8 +97,8 @@ function Login() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-[#e0e5ec]">
-      <div className="neumorphic p-8 w-80 flex flex-col items-center">
+    <main className="flex flex-col items-center justify-center min-h-full bg-[#e0e5ec]">
+      <div className="neumorphic rounded-[12px] p-8 w-80 flex flex-col items-center">
         <h1 className="text-2xl font-bold mb-4 text-gray-800">Login</h1>
         <div className="flex flex-col gap-4 w-full">
           <input

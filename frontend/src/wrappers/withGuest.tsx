@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuthStore } from "@/store/auth.store";
+import Navbar from "@/components/NavBar";
 
 export function withGuest(Component: React.ComponentType) {
   return function GuestOnlyPage(props: any) {
@@ -15,6 +16,11 @@ export function withGuest(Component: React.ComponentType) {
       }
     }, [isSignedIn]);
 
-    return <Component {...props} />;
+    return (
+      <>
+        <Navbar/>
+        <Component {...props} />
+      </>
+    );
   };
 }

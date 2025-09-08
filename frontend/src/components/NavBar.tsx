@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 
@@ -13,6 +13,7 @@ import ProfileButton from "@/components/ProfileButton";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(true);
   const { isSignedIn, data } = useAuthStore();
   const signOut = useAuthStore((state) => state.signOut);
   const { showToast } = useToast();
@@ -23,9 +24,9 @@ export default function Navbar() {
       pathname === href ? "scale-105 border-2 border-blue-500" : "text-gray-900"
     }`;
 
-  const ToProfile = (e:React.MouseEvent) =>{
+  const ToProfile = (e: React.MouseEvent) => {
     router.replace("/profile");
-  }
+  };
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -39,20 +40,35 @@ export default function Navbar() {
     showToast("Logout successful!", "success");
   };
 
-  return (
-    <nav className="flex items-center justify-between px-6 py-4 neumorphic mb-8 mx-4 mt-4">
-      <div className="text-xl font-bold text-gray-800">
-        <Link href="/">ChatVerse</Link>
-      </div>
-      {isSignedIn ? (
-        <div className="flex items-center gap-4">
+  if (isSignedIn) {
+    return (
+      <nav className="flex flex-col items-center justify-between neumorphic rounded-[12px] m-1 p-2">
+        <div className="flex flex-col items-center gap-4">
+          <NeumorphicButton onClick={() => setCollapsed(!collapsed)}>
+            {collapsed ? "M" : "Close"}
+          </NeumorphicButton>
           <NeumorphicLink href="/listChat" className={linkClass("/listChat")}>
-            Chat
+            {collapsed ? "C" : "Chat"}
           </NeumorphicLink>
-          <ProfileButton onClickSync={ToProfile} photoUrl={data?.profileImage ?? ""} className={linkClass("/profile")}/>
-          <NeumorphicButton onClick={handleLogout}>Logout</NeumorphicButton>
         </div>
-      ) : (
+        <div className="flex flex-col items-center gap-4">
+          <ProfileButton
+            onClickSync={ToProfile}
+            photoUrl={data?.profileImage ?? ""}
+            className={linkClass("/profile")}
+          />
+          <NeumorphicButton onClick={handleLogout}>
+            {collapsed ? "L" : "Logout"}
+          </NeumorphicButton>
+        </div>
+      </nav>
+    );
+  } else {
+    return (
+      <nav className="flex items-center justify-between px-6 py-4 neumorphic rounded-[12px] mb-8 mx-4 mt-4 min-w-full">
+        <div className="text-xl font-bold text-gray-800">
+          <Link href="/">ChatVerse</Link>
+        </div>
         <div className="flex items-center gap-4">
           <NeumorphicLink href="/login" className={linkClass("/login")}>
             Login
@@ -61,7 +77,7 @@ export default function Navbar() {
             Signup
           </NeumorphicLink>
         </div>
-      )}
-    </nav>
-  );
+      </nav>
+    );
+  }
 }
